@@ -15,15 +15,16 @@ function ProfileHandler(db) {
         profile.getByUserId(parseInt(userId), function (err, doc) {
             if (err) return next(err);
             doc.userId = userId;
-
+            console.log(doc);
             // @TODO @FIXME
             // while the developer intentions were correct in encoding the user supplied input so it
             // doesn't end up as an XSS attack, the context is incorrect as it is encoding the firstname for HTML
             // while this same variable is also used in the context of a URL link element
-            doc.firstNameSafeString = ESAPI.encoder().encodeForHTML(doc.firstName)
+            doc.firstNameSafeString = ESAPI.encoder().encodeForHTML(doc.firstName);
             // fix it by replacing the above with another template variable that is used for 
             // the context of a URL in a link header
-            // doc.doc.firstNameSafeURLString = ESAPI.encoder().encodeForURL(urlInput)
+            const urlEncodedName = ESAPI.encoder().encodeForURL(`${doc.firstName} ${doc.lastName}`);
+            doc.nameSafeURLString = `https://google.com/?q=${urlEncodedName}`;
 
             return res.render("profile", doc);
         });
